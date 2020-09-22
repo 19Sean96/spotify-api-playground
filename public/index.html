@@ -24,7 +24,7 @@
 		<div class="container">
 			<div id="login">
 				<h1>This is an example of the Authorization Code flow</h1>
-				<button class="btn btn-primary login-btn">
+				<button class="btn btn-primary login-btn"> 
 					Log in with Spotify
 				</button>
 			</div>
@@ -172,15 +172,15 @@
 					return a && b ? [a, b] : [false, false];
 				}
 
-				function openRequestedPopUp() {
-					windowObjectRef = window.open(
-						`${window.location.origin}/login`,
-						"Log In To Your Spotify Account",
-						"height=1200,width=800,opener"
-					);
-					// console.log( windowObjectRef)
-					isLoginWindowClosed();
-				}
+				// function openRequestedPopUp() {
+				// 	windowObjectRef = window.open(
+				// 		`${window.location.origin}/login`,
+				// 		"Log In To Your Spotify Account",
+				// 		"height=1200,width=800,opener"
+				// 	);
+				// 	// console.log( windowObjectRef)
+				// 	isLoginWindowClosed();
+				// }
 				function isLoginWindowClosed() {
 					const checkIfWindowClosed = setInterval(() => {
 						[access_token, refresh_token] = checkCookies();

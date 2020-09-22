@@ -29,6 +29,10 @@ app.use(express.static(__dirname + "/public"))
 	.use(cors())
 	.use(cookieParser());
 
+app.get("/test", function(req,res) {
+	res.send('it worked!')
+})
+
 app.get("/login", function (req, res) {
 	const state = generateRandomString(16);
 	res.cookie(stateKey, state);
@@ -98,7 +102,7 @@ app.get("/callback", function (req, res) {
 				})
 					.then((response) => {
 						console.log(response.data);
-						res.redirect(
+						res.send(
 							"/#" +
 								querystring.stringify({
 									access_token: access_token,
