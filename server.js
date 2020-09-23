@@ -29,16 +29,17 @@ app.use(express.static(__dirname + "/public"))
 	.use(cors())
 	.use(cookieParser());
 
-app.get("/test", function(req,res) {
-	res.send('it worked!')
-})
+app.get("/test", function (req, res) {
+	res.send("it worked!");
+});
 
 app.get("/login", function (req, res) {
 	const state = generateRandomString(16);
 	res.cookie(stateKey, state);
 
 	// your application requests authorization
-	const scope = "user-read-private user-read-email user-read-currently-playing user-read-playback-state";
+	const scope =
+		"user-read-private user-read-email user-read-currently-playing user-read-playback-state";
 	res.redirect(
 		"https://accounts.spotify.com/authorize?" +
 			querystring.stringify({
@@ -89,35 +90,18 @@ app.get("/callback", function (req, res) {
 		})
 			.then((response) => {
 				const { access_token, refresh_token } = response.data;
-				res.cookie('a', access_token)
-				res.cookie('b', refresh_token)
+				res.cookie("a", access_token);
+				res.cookie("b", refresh_token);
+				res.send(
+					"/#" +
+						querystring.stringify({
+							access_token: access_token,
+							refresh_token: refresh_token,
+						})
+				);
 				console.log("ACCESS TOKEN: " + access_token);
 				console.log("REFRESH TOKEN: " + refresh_token);
-				axios({
-					url: "https://api.spotify.com/v1/me",
-					headers: {
-						Authorization: `Bearer ${access_token}`,
-					},
-					json: true,
-				})
-					.then((response) => {
-						console.log(response.data);
-						res.send(
-							"/#" +
-								querystring.stringify({
-									access_token: access_token,
-									refresh_token: refresh_token,
-								})
-						);
-					})
-					.catch((error) => {
-						console.log(error);
-						res.redirect(
-							`/#${querystring.stringify({
-								error: "invalid_token",
-							})}`
-						);
-					});
+
 			})
 			.catch((error) => {
 				console.log(error);
@@ -130,38 +114,40 @@ app.get("/callback", function (req, res) {
 	}
 });
 
-app.get('/refresh_token', function(req,res) {
-    const refresh_token = req.query.refresh_token;
-    axios({
-        url: 'https://accounts.spotify.com/api/token',
-        method: 'post',
-        params: {
-            grant_type: 'refresh_token',
-            refresh_token: refresh_token
-        },
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        auth: {
-            username: client_id,
-            password: client_secret,
-        },
-    }).then(response => {
-        console.log(response.data);
-        access_token = response.data.access_token;
-        res.send({
-            'access_token': access_token
-        })
-    }).catch(error => {
-        console.log(error);
-        res.redirect(
-            `/#${querystring.stringify({
-                error: "invalid_token",
-            })}`
-        );
-    })
-})
+app.get("/refresh_token", function (req, res) {
+	const refresh_token = req.query.refresh_token;
+	axios({
+		url: "https://accounts.spotify.com/api/token",
+		method: "post",
+		params: {
+			grant_type: "refresh_token",
+			refresh_token: refresh_token,
+		},
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		auth: {
+			username: client_id,
+			password: client_secret,
+		},
+	})
+		.then((response) => {
+			console.log(response.data);
+			access_token = response.data.access_token;
+			res.send({
+				access_token: access_token,
+			});
+		})
+		.catch((error) => {
+			console.log(error);
+			res.redirect(
+				`/#${querystring.stringify({
+					error: "invalid_token",
+				})}`
+			);
+		});
+});
 
 // app.get('/currentsong', function(req,res) {
 // 	axios({

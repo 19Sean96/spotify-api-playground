@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import logo from "./logo.svg";
 import axios from "axios";
 import "./App.scss";
+import {WebPlayer} from './context';
 
 function App() {
+	// const Spotify = window.spotify-player.js
 	const [loggedIn, handleLogin] = useState(false);
 	const [windowObjRef, setWindowObjRef] = useState();
-	const [tokens, setTokens] = useState();
-	const [watchingInterval, setWatchingInterval] = useState();
+	// const [tokens, setTokens] = useState([]);
+	const [tokensWereSet, setTokensWereSet] = useState(false);
+	const [profile, setProfile] = useState();
+    const [currentlyPlaying, setCurrentlyPlaying] = useState();
+    const {tokens, setTokens, setPlayer} = useContext(WebPlayer);
 
 	const checkCookies = () => {
 		let a, b;
-		let tokens;
-		console.log(document.cookie);
 		const cookies = document.cookie.split("; ");
 		if (cookies.length > 2) {
 			cookies.forEach((cookie, index) => {
@@ -22,27 +25,12 @@ function App() {
 					b = cookie.slice(2);
 				} else return;
 			});
-			console.log("ACCESS_TOKEN " + a);
-			console.log("REFRESH_TOKEN " + b);
 
-			// if (a && b) clearInterval(checkCookies)
-			console.log("THERE ARE COOKIES");
-			console.log([a, b]);
-			tokens = [a, b];
-			clearInterval(watchingInterval);
-			setWatchingInterval(undefined);
-			setTokens(tokens);
+			setTokens([a, b]);
 		} else {
-			console.log("THERE ARE NO COOKIES");
+			setTimeout(checkCookies, 300);
 		}
 	};
-
-	const watchWindow = () => {
-		setWatchingInterval(setInterval(() => {
-			checkCookies();
-		}, 300))
-	}
-
 
 	const openRequestedPopUp = () => {
 		setWindowObjRef(
@@ -50,59 +38,67 @@ function App() {
 				`http://localhost:8888/login`,
 				"Log In To Your Spotify Account",
 				"height=1200,width=800,opener"
-			))
-
-		watchWindow();
-		// console.log( windowObjectRef)
+			)
+		);
 	};
 
-	// const checkIfWindowClosed = () => {
-	// setTokens(() => {
-	// 	const tokens = checkCookies();
-	// 	console.log(tokens);
-	// 	return tokens
-	// });
-
-	// checkCookies();
-
-	// console.log(tokens);
-	// if (tokens[0] !== false && tokens[1] !== false) {
-	// 	clearInterval(checkIfWindowClosed);
-	// 	console.log(windowObjectRef);
-	// }
-	// if (windowObjectRef.closed) {
-	//   console.log("window closed");
-
-	//   axios({
-	//     url: "https://api.spotify.com/v1/me",
-	//     headers: {
-	//       Authorization: "Bearer " + tokens.access,
-	//     },
-	//     json: true,
-	//   }).then(response => {
-	//     console.log(response);
-	//     // console.log(window.opener)
-	//     // window.opener.location.pathname = params
-	//   })
-	// }
-	// };
-
-	// const watchWindow = () => {
-	// 	const checkIfWindowClosed = setInterval(() => {
-	// 		// const newTokens = checkCookies();
-	// 		if (windowIsOpen && windowObjRef.current.closed) {
-	// 			setWindowIsOpen(false);
-	// 			clearInterval(checkIfWindowClosed);
-	// 		}
-	// 	}, 300);
-	// };
+	const getProfile = () => {
+		axios({
+			url: "https://api.spotify.com/v1/me",
+			headers: {
+				Authorization: `Bearer ${tokens[0]}`,
+			},
+			json: true,
+		})
+			.then((response) => {
+                console.log(response.data);
+                setProfile(response.data)
+			})
+			.catch((error) => {
+				console.log(error);
+				// res.redirect(
+				// 	`/#${querystring.stringify({
+				// 		error: "invalid_token",
+				// 	})}`
+				// );
+			});
+	}
+	
+	const getCurrentlyPlaying = () => {
+		axios({
+			url: "https://api.spotify.com/v1/me/player/currently-playing",
+			headers: {
+				Authorization: `Bearer ${tokens[0]}`,
+			},
+			json: true,
+		})
+			.then((response) => {
+                console.log(response.data);
+                setCurrentlyPlaying(response.data)
+			})
+			.catch((error) => {
+				console.log(error);
+				// res.redirect(
+				// 	`/#${querystring.stringify({
+				// 		error: "invalid_token",
+				// 	})}`
+				// );
+			});
+	}
 
 	useEffect(() => {
-		checkCookies();
+		if (!tokensWereSet) {
+			checkCookies();
 
-		if (tokens) {
-			console.log(tokens);
-			windowObjRef.close();
+			if (tokens.length > 0) {
+				setTokensWereSet(true);
+                windowObjRef && !windowObjRef.closed && windowObjRef.close();
+                getProfile();
+                // setPlayer(new Spotify.Player({
+                //     name: 'Web Playback SDK Quick Start Player',
+                //     getOAuthToken: cb => cb(token)
+                // }))
+			}
 		}
 	}, [tokens]);
 
@@ -135,6 +131,16 @@ function App() {
 					<div className="oath">
 						<p className="access-token">{tokens[0]}</p>
 						<p className="refresh-token">{tokens[1]}</p>
+					</div>
+				)}
+
+				{profile && (
+					<div>
+						<p>Email: {profile.email}</p>
+						<p>Display Name: {profile.display_name}</p>
+						<button onClick={e => {
+							getCurrentlyPlaying()
+						}}>Get currently playing song</button>
 					</div>
 				)}
 			</header>

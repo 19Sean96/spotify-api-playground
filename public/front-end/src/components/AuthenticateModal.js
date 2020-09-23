@@ -4,7 +4,7 @@ export default (props) => {
     const scope = "user-read-private user-read-email user-read-currently-playing user-read-playback-state";
 	return (
 		<div className="auth__wrapper">
-			<iframe
+			{/* <iframe
 				src={
 					"https://accounts.spotify.com/authorize?" +
 					querystring.stringify({
@@ -16,7 +16,7 @@ export default (props) => {
 					})
 				}
 				frameborder="0"
-			></iframe>
+			></iframe> */}
 		</div>
 	);
 };
