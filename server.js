@@ -134,10 +134,8 @@ app.get("/refresh_token", function (req, res) {
 	})
 		.then((response) => {
 			console.log(response.data);
-			access_token = response.data.access_token;
-			res.send({
-				access_token: access_token,
-			});
+			const {access_token} = response.data;
+			res.json(access_token);
 		})
 		.catch((error) => {
 			console.log(error);
