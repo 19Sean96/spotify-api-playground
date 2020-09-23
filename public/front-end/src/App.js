@@ -5,23 +5,22 @@ import "./App.scss";
 import {WebPlayer} from './context';
 
 function App() {
-	// const Spotify = window.spotify-player.js
-	const [loggedIn, handleLogin] = useState(false);
 	const [windowObjRef, setWindowObjRef] = useState();
 	const [profile, setProfile] = useState();
-    const {tokens, player, setTokens, setPlayer} = useContext(WebPlayer);
+    const {loggedIn, tokens, player, setTokens} = useContext(WebPlayer);
 
 	const checkCookies = () => {
 		let a, b;
 		const cookies = document.cookie.split("; ");
 		if (cookies.length > 2) {
-			cookies.forEach((cookie, index) => {
+			cookies.forEach(cookie => {
 				if (cookie.includes("a=")) {
 					a = cookie.slice(2);
 				} else if (cookie.includes("b=")) {
 					b = cookie.slice(2);
 				} else return;
-			});
+            });
+
 			setTokens([a, b]);
 		} else {
 			setTimeout(checkCookies, 300);
@@ -57,12 +56,21 @@ function App() {
 
 	useEffect(() => {
         if (tokens.length > 0) {
-            windowObjRef && !windowObjRef.closed && windowObjRef.close();
-            getProfile();
-        } else {
+            if(!loggedIn){
+                axios(`/refresh_token?refresh_token=${tokens[1]}`)
+                .then(res => {
+                    setTokens(prevState => [res.data, prevState[1]])
+                })
+            } else {
+                windowObjRef && !windowObjRef.closed && windowObjRef.close();
+                getProfile();
+                console.log(window.Spotify)
+            }
+        } 
+        else {
             checkCookies();
         }
-	}, [tokens]);
+	}, [tokens, loggedIn]);
 
 	return (
 		<div className="App">
