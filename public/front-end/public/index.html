@@ -25,37 +25,6 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>React App</title>
-    <script src="https://sdk.scdn.co/spotify-player.js"></script>
-    <script>
-        window.onSpotifyWebPlaybackSDKReady = (token) => {
-            window.webPlayer = new Spotify.Player({
-                name: 'Web Playback SDK Quick Start Player',
-                getOAuthToken: cb => { cb(token); }
-            });
-
-            // Error handling
-            window.webPlayer.addListener('initialization_error', ({ message }) => { console.error(message); });
-            window.webPlayer.addListener('authentication_error', ({ message }) => { console.error(message); });
-            window.webPlayer.addListener('account_error', ({ message }) => { console.error(message); });
-            window.webPlayer.addListener('playback_error', ({ message }) => { console.error(message); });
-
-            // Playback status updates
-            window.webPlayer.addListener('player_state_changed', state => { console.log(state); });
-
-            // Ready
-            window.webPlayer.addListener('ready', ({ device_id }) => {
-                console.log('Ready with Device ID', device_id);
-            });
-
-            // Not Ready
-            window.webPlayer.addListener('not_ready', ({ device_id }) => {
-                console.log('Device ID has gone offline', device_id);
-            });
-
-            // Connect to the player!
-            window.webPlayer.connect();
-        };
-    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -70,7 +39,38 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+        window.onSpotifyWebPlaybackSDKReady = (token) => {
+            if(token){
+                window.webPlayer = new Spotify.Player({
+                    name: 'Web Playback SDK Quick Start Player',
+                    getOAuthToken: cb => { cb(token); }
+                });
 
+                // Error handling
+                window.webPlayer.addListener('initialization_error', ({ message }) => { console.error(message); });
+                window.webPlayer.addListener('authentication_error', ({ message }) => { console.error(message); });
+                window.webPlayer.addListener('account_error', ({ message }) => { console.error(message); });
+                window.webPlayer.addListener('playback_error', ({ message }) => { console.error(message); });
+
+                // Playback status updates
+                window.webPlayer.addListener('player_state_changed', state => { console.log(state); });
+
+                // Ready
+                window.webPlayer.addListener('ready', ({ device_id }) => {
+                    console.log('Ready with Device ID', device_id);
+                });
+
+                // Not Ready
+                window.webPlayer.addListener('not_ready', ({ device_id }) => {
+                    console.log('Device ID has gone offline', device_id);
+                });
+
+                // Connect to the player!
+                window.webPlayer.connect();
+            }
+        };
+    </script>
   </body>
 </html>
