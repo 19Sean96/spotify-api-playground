@@ -9,7 +9,6 @@ export default ({children}) => {
     const [loggedIn, setLoggedIn] = useState(false);
 
     useEffect(() => {
-        console.log('context')
         if(window.Spotify){
             const playerInit = window.onSpotifyWebPlaybackSDKReady;
             playerInit(tokens[0])
