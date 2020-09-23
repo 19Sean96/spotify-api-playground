@@ -6,11 +6,12 @@ export const WebPlayer = createContext(null)
 export default ({children}) => {
     const [tokens, setTokens] = useState([]);
     const [player, setPlayer] = useState({});
-    
+
     useEffect(() => {
         if(window.Spotify){
             const playerInit = window.onSpotifyWebPlaybackSDKReady;
-            playerInit(tokens[0], setPlayer)
+            playerInit(tokens[0])
+            setPlayer(window.webPlayer)
         }
     }, [tokens])
 
