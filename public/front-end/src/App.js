@@ -8,11 +8,8 @@ function App() {
 	// const Spotify = window.spotify-player.js
 	const [loggedIn, handleLogin] = useState(false);
 	const [windowObjRef, setWindowObjRef] = useState();
-	// const [tokens, setTokens] = useState([]);
-	const [tokensWereSet, setTokensWereSet] = useState(false);
 	const [profile, setProfile] = useState();
-    const [currentlyPlaying, setCurrentlyPlaying] = useState();
-    const {tokens, setTokens, setPlayer} = useContext(WebPlayer);
+    const {tokens, player, setTokens, setPlayer} = useContext(WebPlayer);
 
 	const checkCookies = () => {
 		let a, b;
@@ -25,7 +22,6 @@ function App() {
 					b = cookie.slice(2);
 				} else return;
 			});
-
 			setTokens([a, b]);
 		} else {
 			setTimeout(checkCookies, 300);
@@ -56,50 +52,16 @@ function App() {
 			})
 			.catch((error) => {
 				console.log(error);
-				// res.redirect(
-				// 	`/#${querystring.stringify({
-				// 		error: "invalid_token",
-				// 	})}`
-				// );
-			});
-	}
-	
-	const getCurrentlyPlaying = () => {
-		axios({
-			url: "https://api.spotify.com/v1/me/player/currently-playing",
-			headers: {
-				Authorization: `Bearer ${tokens[0]}`,
-			},
-			json: true,
-		})
-			.then((response) => {
-                console.log(response.data);
-                setCurrentlyPlaying(response.data)
-			})
-			.catch((error) => {
-				console.log(error);
-				// res.redirect(
-				// 	`/#${querystring.stringify({
-				// 		error: "invalid_token",
-				// 	})}`
-				// );
 			});
 	}
 
 	useEffect(() => {
-		if (!tokensWereSet) {
-			checkCookies();
-
-			if (tokens.length > 0) {
-				setTokensWereSet(true);
-                windowObjRef && !windowObjRef.closed && windowObjRef.close();
-                getProfile();
-                // setPlayer(new Spotify.Player({
-                //     name: 'Web Playback SDK Quick Start Player',
-                //     getOAuthToken: cb => cb(token)
-                // }))
-			}
-		}
+        if (tokens.length > 0) {
+            windowObjRef && !windowObjRef.closed && windowObjRef.close();
+            getProfile();
+        } else {
+            checkCookies();
+        }
 	}, [tokens]);
 
 	return (
@@ -111,15 +73,7 @@ function App() {
 				{!loggedIn ? (
 					<button
 						className="login-btn"
-						onClick={
-							openRequestedPopUp
-							// axios({
-							//   url: 'http://localhost:8888/test',
-							//   method: 'get'
-							// }).then(response => {
-							//   console.log(response)
-							// })
-						}
+						onClick={openRequestedPopUp}
 					>
 						Login With Spotify
 					</button>
@@ -139,7 +93,7 @@ function App() {
 						<p>Email: {profile.email}</p>
 						<p>Display Name: {profile.display_name}</p>
 						<button onClick={e => {
-							getCurrentlyPlaying()
+							
 						}}>Get currently playing song</button>
 					</div>
 				)}
