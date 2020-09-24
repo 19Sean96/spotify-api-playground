@@ -2,12 +2,13 @@ import React, { useState, useEffect, useContext } from "react";
 import logo from "./logo.svg";
 import axios from "axios";
 import "./App.scss";
-import {WebPlayer} from './context';
+import {WebPlayerContext} from './context'; 
+import WebPlayer from './components/WebPlayer'
 
 function App() {
 	const [windowObjRef, setWindowObjRef] = useState();
 	const [profile, setProfile] = useState();
-    const {loggedIn, tokens, player, setTokens} = useContext(WebPlayer);
+    const {loggedIn, tokens, player, setTokens} = useContext(WebPlayerContext);
 
 	const checkCookies = () => {
 		let a, b;
@@ -75,7 +76,6 @@ function App() {
 	return (
 		<div className="App">
 			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo" />
 				<p>This is an example of the Authorization Code flow</p>
 
 				{!loggedIn ? (
@@ -106,6 +106,7 @@ function App() {
 					</div>
 				)}
 			</header>
+			{loggedIn && player && <WebPlayer />}
 		</div>
 	);
 }
