@@ -28,7 +28,7 @@ export default ({children}) => {
                     new window.Spotify.Player({
                         name: 'Chromesthetics',
                         getOAuthToken: cb => cb(tokens[0]),
-                        volume: .1
+                        volume: .05
                     })
                 )
                 setLoggedIn(true);
@@ -69,7 +69,7 @@ export default ({children}) => {
     }, [player])
 
     return (
-        <WebPlayerContext.Provider value={{connected, loggedIn, tokens, isPlaying, player, setLoggedIn, setPlayer, setTokens, setConnected}}>
+        <WebPlayerContext.Provider value={{connected, loggedIn, tokens,setIsPlaying, isPlaying, player, setLoggedIn, setPlayer, setTokens, setConnected}}>
             {children}
         </WebPlayerContext.Provider>
     )
