@@ -1,6 +1,12 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { WebPlayerContext } from "../context";
 import styled from "styled-components";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlay, faFastBackward, faFastForward, faUndoAlt, faRedoAlt} from '@fortawesome/free-solid-svg-icons'
+import { gsap } from 'gsap'
+import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
+
+gsap.registerPlugin(MorphSVGPlugin)
 
 // transition: width .5s linear;
 const StyledProgressbar = styled.div`
@@ -77,6 +83,32 @@ export default (props) => {
 	return (
 		<section className="player">
 			<div className="player--controls">
+                <div className="player--controls--buttons">
+                    <div className="player--skip-back player--controls--button__wrapper">
+                        <button onClick={() => player.previousTrack()} className="player--skip-back__button player--controls--button">
+                            <FontAwesomeIcon icon={faFastBackward} />
+                        </button>
+                    </div>
+                    <div className="player--back-30 player--controls--button__wrapper">
+                        <button className="player--back-30__button player--controls--button">
+                            <FontAwesomeIcon icon={faUndoAlt} />
+                        </button>
+                    </div>
+                    <div className="player--play player--controls--button__wrapper">
+                        <button onClick={() => player.togglePlay()} className="player--play__button player--controls--button">
+                            <FontAwesomeIcon icon={faPlay} />
+                        </button>
+                    </div>
+                    <div className="player--forward-30 player--controls--button__wrapper">                        
+                        <button className="player--forward-30__button player--controls--button">
+                            <FontAwesomeIcon icon={faRedoAlt} />
+                        </button></div>
+                    <div className="player--skip-forward player--controls--button__wrapper">
+                        <button onClick={() => player.nextTrack()} className="player--skip-forward__button player--controls--button">
+                            <FontAwesomeIcon icon={faFastForward} />
+                        </button>
+                    </div>
+                </div>
 				<StyledProgressbar
 					className="player--progressbar"
                     ref={controlBar}
