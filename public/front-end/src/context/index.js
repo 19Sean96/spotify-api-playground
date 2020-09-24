@@ -8,7 +8,7 @@ export default ({children}) => {
     const [player, setPlayer] = useState();
     const [loggedIn, setLoggedIn] = useState(false);
     const [connected, setConnected] = useState(false);
-
+    const [isPlaying, setIsPlaying] = useState(false)
     const handleSDKLoaded = () => {
         return new Promise((resolve) => {
             if (window.Spotify) {
@@ -24,11 +24,11 @@ export default ({children}) => {
         console.log('setting player')
         if (tokens.length > 1) {
             handleSDKLoaded().then(() => {
-                setPlayer(prevPlayer =>
-                    prevPlayer ||
+                setPlayer(
                     new window.Spotify.Player({
                         name: 'Chromesthetics',
-                        getOAuthToken: cb => cb(tokens[0])
+                        getOAuthToken: cb => cb(tokens[0]),
+                        volume: .1
                     })
                 )
                 setLoggedIn(true);
@@ -46,6 +46,8 @@ export default ({children}) => {
 
             // Playback status updates
             player.addListener('player_state_changed', state => {
+                console.log(state);
+                setIsPlaying(!state.paused)
                 setConnected(state !== null ? true : false);
             });
 
@@ -67,7 +69,7 @@ export default ({children}) => {
     }, [player])
 
     return (
-        <WebPlayerContext.Provider value={{connected, loggedIn, tokens, player, setLoggedIn, setPlayer, setTokens, setConnected}}>
+        <WebPlayerContext.Provider value={{connected, loggedIn, tokens, isPlaying, player, setLoggedIn, setPlayer, setTokens, setConnected}}>
             {children}
         </WebPlayerContext.Provider>
     )
