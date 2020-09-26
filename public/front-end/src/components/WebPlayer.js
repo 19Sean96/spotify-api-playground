@@ -1,18 +1,18 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { WebPlayerContext } from "../context";
 import styled from "styled-components";
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faPlay,
+	faPause,
 	faFastBackward,
 	faFastForward,
 	faUndoAlt,
 	faRedoAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { gsap } from "gsap";
-import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 
-gsap.registerPlugin(MorphSVGPlugin);
+import { MorphPlayPauseSVG } from "./SVG";
 
 // transition: width .5s linear;
 const StyledProgressbar = styled.div`
@@ -22,12 +22,18 @@ const StyledProgressbar = styled.div`
 		}
 	}
 `;
+
 let timeout;
 // let prevAnimTime;
 export default (props) => {
-	const { player, connected, isPlaying, setIsPlaying } = useContext(
-		WebPlayerContext
-	);
+	const {
+		player,
+		connected,
+		isPlaying,
+		setIsPlaying,
+		track,
+		tokens,
+	} = useContext(WebPlayerContext);
 	// console.log(getCurrentState())
 
 	/* time = {
@@ -37,6 +43,7 @@ export default (props) => {
     */
 	const controlThumb = useRef(null);
 	const controlBar = useRef(null);
+	const playIcon = useRef();
 	const [currentBarWidth, setCurrentBarWidth] = useState();
 	const timeRequestRef = useRef();
 	const prevAnimTime = useRef();
@@ -51,23 +58,16 @@ export default (props) => {
 	});
 
 	const updateBarWidth = (animTime) => {
-		console.log(timeRequestRef);
-		console.log(isPlaying);
+		// console.log(timeRequestRef);
+		// console.log(isPlaying);
 
 		if (isPlaying && !isDragging) {
 			console.log("THE SONG IS PLAYING");
-			// setTime(() => {
-			//     return {
-			//         current: time.current + animTime - prevAnimTime.current,
-			//         total: time.total
-			//     };
-			// });
-			// setCurrentBarWidth(res.position / res.duration)
-			// prevAnimTime.current = animTime
-			console.log(`Time before request: ${Date.now()}`);
+
+			// console.log(`Time before request: ${Date.now()}`);
 			player.getCurrentState().then((res) => {
-				console.log(`Spotify Response: ${res}`);
-				console.log(`Time of response: ${Date.now()}`);
+				// console.log(`Spotify Response: ${res}`);
+				// console.log(`Time of response: ${Date.now()}`);
 				setTime(() => {
 					return {
 						current: res.position,
@@ -82,12 +82,33 @@ export default (props) => {
 		} else if (isDragging) {
 			player.pause();
 		} else {
-            console.log("THE SONG IS *****NOT****** PLAYING");
+			// console.log("THE SONG IS *****NOT****** PLAYING");
 			timeRequestRef.current = requestAnimationFrame(() =>
 				updateBarWidth(time.current)
 			);
 		}
 	};
+
+	useEffect(() => {
+		console.log(track);
+		if (track) {
+			const { id } = track.current_track;
+			axios({
+				url: `https://api.spotify.com/v1/audio-analysis/${id}`,
+				headers: {
+					Authorization: `Bearer ${tokens[0]}`,
+				},
+				json: true,
+			})
+				.then((response) => {
+					console.log("THIS IS THE AUDIO ANALYSIS", response.data);
+					// setProfile(response.data)
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		}
+	}, [track]);
 
 	useEffect(() => {
 		timeRequestRef.current = requestAnimationFrame(() =>
@@ -157,17 +178,27 @@ export default (props) => {
 							}}
 							className="player--back-30__button player--controls--button"
 						>
+							<span className="thirty">30</span>
 							<FontAwesomeIcon icon={faUndoAlt} />
 						</button>
 					</div>
 					<div className="player--play player--controls--button__wrapper">
 						<button
 							onClick={() => {
-                                player.togglePlay().then(() => !isPlaying && cancelAnimationFrame(timeRequestRef.current))
-                            }}
+								player
+									.togglePlay()
+									.then(
+										() =>
+											!isPlaying &&
+											cancelAnimationFrame(
+												timeRequestRef.current
+											)
+									);
+							}}
 							className="player--play__button player--controls--button"
 						>
-							<FontAwesomeIcon icon={faPlay} />
+							{/* <FontAwesomeIcon icon={faPlay} ref={playIcon}/> */}
+							<MorphPlayPauseSVG isPlaying={isPlaying} />
 						</button>
 					</div>
 					<div className="player--forward-30 player--controls--button__wrapper">
@@ -175,6 +206,8 @@ export default (props) => {
 							onClick={() => player.seek(time.current + 30000)}
 							className="player--forward-30__button player--controls--button"
 						>
+							{" "}
+							<span className="thirty">30</span>
 							<FontAwesomeIcon icon={faRedoAlt} />
 						</button>
 					</div>

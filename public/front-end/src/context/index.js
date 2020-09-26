@@ -8,7 +8,8 @@ export default ({children}) => {
     const [player, setPlayer] = useState();
     const [loggedIn, setLoggedIn] = useState(false);
     const [connected, setConnected] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false)
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [track,setTrack] = useState()
     const handleSDKLoaded = () => {
         return new Promise((resolve) => {
             if (window.Spotify) {
@@ -47,6 +48,7 @@ export default ({children}) => {
             // Playback status updates
             player.addListener('player_state_changed', state => {
                 console.log(state);
+                setTrack(state.track_window)
                 setIsPlaying(!state.paused)
                 setConnected(state !== null ? true : false);
             });
@@ -69,7 +71,7 @@ export default ({children}) => {
     }, [player])
 
     return (
-        <WebPlayerContext.Provider value={{connected, loggedIn, tokens,setIsPlaying, isPlaying, player, setLoggedIn, setPlayer, setTokens, setConnected}}>
+        <WebPlayerContext.Provider value={{connected, loggedIn, tokens,setIsPlaying, isPlaying, player, setLoggedIn, setPlayer, setTokens, setConnected, track}}>
             {children}
         </WebPlayerContext.Provider>
     )
