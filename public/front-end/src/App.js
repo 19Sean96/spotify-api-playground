@@ -4,11 +4,12 @@ import axios from "axios";
 import "./App.scss";
 import {WebPlayerContext} from './context'; 
 import WebPlayer from './components/WebPlayer'
-
+import Visualizer from './components/visualizer'
+import { getProfile } from './functions'
 function App() {
 	const [windowObjRef, setWindowObjRef] = useState();
 	const [profile, setProfile] = useState();
-    const {loggedIn, tokens, player, setTokens} = useContext(WebPlayerContext);
+    const {loggedIn, tokens, player, setTokens, time, audioDetails } = useContext(WebPlayerContext);
 
 	const checkCookies = () => {
 		let a, b;
@@ -38,23 +39,6 @@ function App() {
 		);
 	};
 
-	const getProfile = () => {
-		axios({
-			url: "https://api.spotify.com/v1/me",
-			headers: {
-				Authorization: `Bearer ${tokens[0]}`,
-			},
-			json: true,
-		})
-			.then((response) => {
-                console.log(response.data);
-                setProfile(response.data)
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	}
-
 	useEffect(() => {
         if (tokens.length > 0) {
             if(!loggedIn){
@@ -64,7 +48,9 @@ function App() {
                 })
             } else {
                 windowObjRef && !windowObjRef.closed && windowObjRef.close();
-                getProfile();
+				// getProfile();
+
+				getProfile(tokens[0]).then(res => setProfile(res))
                 console.log(window.Spotify)
             }
         } 
@@ -75,6 +61,7 @@ function App() {
 
 	return (
 		<div className="App">
+			<Visualizer time={time} audioDetails={audioDetails}/>
 			<header className="App-header">
 				<p>This is an example of the Authorization Code flow</p>
 

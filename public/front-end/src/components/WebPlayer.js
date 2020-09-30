@@ -1,7 +1,6 @@
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { WebPlayerContext } from "../context";
 import styled from "styled-components";
-import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faPlay,
@@ -32,7 +31,9 @@ export default (props) => {
 		isPlaying,
 		setIsPlaying,
 		track,
-		tokens,
+        tokens,
+        time,
+        setTime
 	} = useContext(WebPlayerContext);
 	// console.log(getCurrentState())
 
@@ -52,10 +53,7 @@ export default (props) => {
 	const [prevThumbPos, setPrevThumbPos] = useState();
 	const [isDragging, setDragging] = useState(false);
 	const [barWidth, getBarWidth] = useState();
-	const [time, setTime] = useState({
-		current: 0,
-		total: 0,
-	});
+
 
 	const updateBarWidth = (animTime) => {
 		// console.log(timeRequestRef);
@@ -88,27 +86,6 @@ export default (props) => {
 			);
 		}
 	};
-
-	useEffect(() => {
-		console.log(track);
-		if (track) {
-			const { id } = track.current_track;
-			axios({
-				url: `https://api.spotify.com/v1/audio-analysis/${id}`,
-				headers: {
-					Authorization: `Bearer ${tokens[0]}`,
-				},
-				json: true,
-			})
-				.then((response) => {
-					console.log("THIS IS THE AUDIO ANALYSIS", response.data);
-					// setProfile(response.data)
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		}
-	}, [track]);
 
 	useEffect(() => {
 		timeRequestRef.current = requestAnimationFrame(() =>
@@ -156,141 +133,157 @@ export default (props) => {
 	}, [connected]);
 
 	return (
-		<section className="player">
-			<div className="player--controls">
-				<div className="player--controls--buttons">
-					<div className="player--skip-back player--controls--button__wrapper">
-						<button
-							onClick={() => player.previousTrack()}
-							className="player--skip-back__button player--controls--button"
-						>
-							<FontAwesomeIcon icon={faFastBackward} />
-						</button>
-					</div>
-					<div className="player--back-30 player--controls--button__wrapper">
-						<button
-							onClick={() => {
-								let newTime;
-								if (time.current <= 30000) {
-									newTime = 0;
-								} else newTime = time.current - 30000;
-								player.seek(newTime);
-							}}
-							className="player--back-30__button player--controls--button"
-						>
-							<span className="thirty">30</span>
-							<FontAwesomeIcon icon={faUndoAlt} />
-						</button>
-					</div>
-					<div className="player--play player--controls--button__wrapper">
-						<button
-							onClick={() => {
-								player
-									.togglePlay()
-									.then(
-										() =>
-											!isPlaying &&
-											cancelAnimationFrame(
-												timeRequestRef.current
-											)
-									);
-							}}
-							className="player--play__button player--controls--button"
-						>
-							{/* <FontAwesomeIcon icon={faPlay} ref={playIcon}/> */}
-							<MorphPlayPauseSVG isPlaying={isPlaying} />
-						</button>
-					</div>
-					<div className="player--forward-30 player--controls--button__wrapper">
-						<button
-							onClick={() => player.seek(time.current + 30000)}
-							className="player--forward-30__button player--controls--button"
-						>
-							{" "}
-							<span className="thirty">30</span>
-							<FontAwesomeIcon icon={faRedoAlt} />
-						</button>
-					</div>
-					<div className="player--skip-forward player--controls--button__wrapper">
-						<button
-							onClick={() =>
-								player.nextTrack().then(() => {
-									player
-										.getCurrentState()
-										.then((response) => {
-											setTime(() => ({
-												current: response.position,
-												total: response.duration,
-											}));
-											clearTimeout(timeout);
-										});
-									console.log(
-										"THE NEW WIDTH: ",
-										time.current / time.total
-									);
-									setCurrentBarWidth(
-										time.current / time.total
-									);
-								})
-							}
-							className="player--skip-forward__button player--controls--button"
-						>
-							<FontAwesomeIcon icon={faFastForward} />
-						</button>
-					</div>
-				</div>
-				<StyledProgressbar
-					className="player--progressbar"
-					ref={controlBar}
-					width={currentBarWidth}
-					// onMouseMove={e => {
-
-					// }}
-					// onMouseUp={e => {
-
-					// }}
-				>
-					<div className="player--progressbar--full"></div>
-					<div className="player--progressbar--current">
-						<div
-							draggable="true"
-							// onMouseDown={e => {
-
-							// }}
-
-							onDragStart={(e) => {
-								// console.log("REACT EVENT =>", e)
-								// console.log("NATIVE EVENT => ", e.nativeEvent);
-								setThumbStart(e.clientX);
-								setCurrentThumbPos(e.clientX);
-								setPrevThumbPos(e.clientX);
-								setDragging(true);
-								getBarWidth(controlBar.current.clientWidth);
-							}}
-							onDrag={(e) => {
-								setCurrentThumbPos(e.clientX);
-								const changeInWidth =
-									(currentThumbPos - prevThumbPos) /
-									controlBar.current.clientWidth;
-								// console.log("REACT EVENT =>", e)
-								// console.log("NATIVE EVENT => ", e.nativeEvent);
-								// console.log("THUMB REF => ", controlThumb)
-								// console.log("CHANGE IN WIDTH (decimal) ", changeInWidth)
-								setCurrentBarWidth(
-									currentBarWidth + changeInWidth
-								);
-								setPrevThumbPos(currentThumbPos);
-							}}
-							onDragEnd={(e) => {
-								setDragging(false);
-								player.seek(time.total * currentBarWidth);
-							}}
-							ref={controlThumb}
-							className="player--progressbar--current__thumb"
-						></div>
-					</div>
-				</StyledProgressbar>
+		<main className="dashboard">
+			<div className="current">
+				{track && (
+					<>
+						<h2 className="current--song">{track.current_track.name}</h2>
+                        <h2 className="current--artist">{track.current_track.artists[0].name}</h2>
+					</>
+				)}
 			</div>
-		</section>
+			<section className="player">
+				<div className="player--controls">
+					<div className="player--controls--buttons">
+						<div className="player--skip-back player--controls--button__wrapper">
+							<button
+								onClick={() => player.previousTrack()}
+								className="player--skip-back__button player--controls--button"
+							>
+								<FontAwesomeIcon icon={faFastBackward} />
+							</button>
+						</div>
+						<div className="player--back-30 player--controls--button__wrapper">
+							<button
+								onClick={() => {
+									let newTime;
+									if (time.current <= 30000) {
+										newTime = 0;
+									} else newTime = time.current - 30000;
+									player.seek(newTime);
+								}}
+								className="player--back-30__button player--controls--button"
+							>
+								<span className="thirty">30</span>
+								<FontAwesomeIcon icon={faUndoAlt} />
+							</button>
+						</div>
+						<div className="player--play player--controls--button__wrapper">
+							<button
+								onClick={() => {
+									player
+										.togglePlay()
+										.then(
+											() =>
+												!isPlaying &&
+												cancelAnimationFrame(
+													timeRequestRef.current
+												)
+										);
+								}}
+								className="player--play__button player--controls--button"
+							>
+								{/* <FontAwesomeIcon icon={faPlay} ref={playIcon}/> */}
+								<MorphPlayPauseSVG isPlaying={isPlaying} />
+							</button>
+						</div>
+						<div className="player--forward-30 player--controls--button__wrapper">
+							<button
+								onClick={() =>
+									player.seek(time.current + 30000)
+								}
+								className="player--forward-30__button player--controls--button"
+							>
+								{" "}
+								<span className="thirty">30</span>
+								<FontAwesomeIcon icon={faRedoAlt} />
+							</button>
+						</div>
+						<div className="player--skip-forward player--controls--button__wrapper">
+							<button
+								onClick={() =>
+									player.nextTrack().then(() => {
+										player
+											.getCurrentState()
+											.then((response) => {
+												setTime(() => ({
+													current: response.position,
+													total: response.duration,
+												}));
+												clearTimeout(timeout);
+											});
+										console.log(
+											"THE NEW WIDTH: ",
+											time.current / time.total
+										);
+										setCurrentBarWidth(
+											time.current / time.total
+										);
+									})
+								}
+								className="player--skip-forward__button player--controls--button"
+							>
+								<FontAwesomeIcon icon={faFastForward} />
+							</button>
+						</div>
+					</div>
+					<StyledProgressbar
+						className="player--progressbar"
+						ref={controlBar}
+						width={currentBarWidth}
+						// onMouseMove={e => {
+
+						// }}
+						// onMouseUp={e => {
+
+						// }}
+					>
+						<div className="player--progressbar--full"></div>
+						<div className="player--progressbar--current">
+							<div
+								draggable="true"
+								// onMouseDown={e => {
+
+								// }}
+
+								onDragStart={(e) => {
+									// console.log("REACT EVENT =>", e)
+									// console.log("NATIVE EVENT => ", e.nativeEvent);
+									setThumbStart(e.clientX);
+									setCurrentThumbPos(e.clientX);
+									setPrevThumbPos(e.clientX);
+									setDragging(true);
+									getBarWidth(controlBar.current.clientWidth);
+								}}
+								onDrag={(e) => {
+									setCurrentThumbPos(e.clientX);
+									const changeInWidth =
+										(currentThumbPos - prevThumbPos) /
+										controlBar.current.clientWidth;
+									// console.log("REACT EVENT =>", e)
+									// console.log("NATIVE EVENT => ", e.nativeEvent);
+									// console.log("THUMB REF => ", controlThumb)
+									// console.log("CHANGE IN WIDTH (decimal) ", changeInWidth)
+									setCurrentBarWidth(
+										currentBarWidth + changeInWidth
+									);
+									setPrevThumbPos(currentThumbPos);
+								}}
+								onDragEnd={(e) => {
+									setDragging(false);
+									player.seek(time.total * currentBarWidth);
+								}}
+								ref={controlThumb}
+								className="player--progressbar--current__thumb"
+							></div>
+						</div>
+					</StyledProgressbar>
+				</div>
+			</section>
+            <div className="scales">
+                <div className="scales--item scales__volume"></div>
+                <div className="scales--item scales__zoom"></div>
+			</div>
+        </main>
 	);
 };
