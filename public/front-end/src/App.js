@@ -9,7 +9,7 @@ import { getProfile } from './functions'
 function App() {
 	const [windowObjRef, setWindowObjRef] = useState();
 	const [profile, setProfile] = useState();
-    const {loggedIn, tokens, player, setTokens, time, audioDetails } = useContext(WebPlayerContext);
+    const {loggedIn, tokens, player, setTokens, time, audioDetails, track } = useContext(WebPlayerContext);
 
 	const checkCookies = () => {
 		let a, b;
@@ -61,7 +61,7 @@ function App() {
 
 	return (
 		<div className="App">
-			<Visualizer time={time} audioDetails={audioDetails}/>
+			<Visualizer time={time} audioDetails={audioDetails} track={track}/>
 			<header className="App-header">
 				<p>This is an example of the Authorization Code flow</p>
 
