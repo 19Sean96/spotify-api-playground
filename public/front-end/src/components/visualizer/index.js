@@ -63,8 +63,8 @@ function Box(props) {
 		to: {
 			scale: segmentAnimation.to ? [
 				1.5 * segmentAnimation.to.pitches[0],
-				1.5 * segmentAnimation.to.pitches[0],
-				1.5 * segmentAnimation.to.pitches[0]
+				1.5 * segmentAnimation.to.pitches[1],
+				1.5 * segmentAnimation.to.pitches[2]
 			] : [1,1,1]
 		},
 		config: config.wobbly
