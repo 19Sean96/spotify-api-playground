@@ -132,7 +132,7 @@ function Visualizer(props) {
 				color="lightblue"
 			/>
 			<Box
-				position={[1.2, 0, 0]}
+				position={[-3.6, 0, 0]}
 				color="green"
 				time={props.time}
 				audioDetails={props.audioDetails}
@@ -145,6 +145,22 @@ function Visualizer(props) {
 				time={props.time}
 				audioDetails={props.audioDetails}
 				pitchToScaleIndex={{ x: 3, y: 4, z: 5 }}
+				track={props.track}
+			/>
+						<Box
+				position={[1.2, 0, 0]}
+				color="green"
+				time={props.time}
+				audioDetails={props.audioDetails}
+				pitchToScaleIndex={{ x: 6, y: 7, z: 8 }}
+				track={props.track}
+			/>
+			<Box
+				position={[3.6, 0, 0]}
+				color="crimson"
+				time={props.time}
+				audioDetails={props.audioDetails}
+				pitchToScaleIndex={{ x: 9, y: 10, z: 11 }}
 				track={props.track}
 			/>
 		</Canvas>

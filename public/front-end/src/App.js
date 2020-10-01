@@ -63,7 +63,6 @@ function App() {
 		<div className="App">
 			<Visualizer time={time} audioDetails={audioDetails} track={track}/>
 			<header className="App-header">
-				<p>This is an example of the Authorization Code flow</p>
 
 				{!loggedIn ? (
 					<button
@@ -73,9 +72,9 @@ function App() {
 						Login With Spotify
 					</button>
 				) : (
-					<p>you are already logged in!</p>
+					<p style={{display: "none"}}>you are already logged in!</p>
 				)}
-
+{/* 
 				{tokens && (
 					<div className="oath">
 						<p className="access-token">{tokens[0]}</p>
@@ -91,7 +90,7 @@ function App() {
 							
 						}}>Get currently playing song</button>
 					</div>
-				)}
+				)} */}
 			</header>
 			{loggedIn && player && <WebPlayer />}
 		</div>
