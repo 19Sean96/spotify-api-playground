@@ -2,112 +2,13 @@ import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "react-three-fiber";
 import { WebPlayerContext } from "../../context";
 import { useSpring, animated, config } from "react-spring/three";
-function Box(props) {
-	// This reference will give us direct access to the mesh
-	const mesh = useRef();
-	// Set up state for the hovered and active state
-	const [hovered, setHover] = useState(false);
-	const [active, setActive] = useState(false);
-	// const {analysis,features} = props.audioDetails
-	// Rotate mesh every frame, this is outside of React without overhead
-	const [tempo, setTempo] = useState();
-	const [segmentIndex, setSegmentIndex] = useState(0);
-	const [segmentAnimation, setSegmentAnimation] = useState({
-		from: undefined,
-		to: undefined,
-		duration: 0,
-	});
-	const [currentBeat, setCurrentBeat] = useState({
-		up: 0,
-		down: 0,
-	});
-
-	const { features, analysis } = props.audioDetails;
-
-	// useEffect(() => {
-
-	// }, [analysis])
-
-	console.log(config);
-
-	useEffect(() => {
-		setSegmentIndex(0);
-	}, [props.track?.current_track.id]);
-
-	useFrame(() => {
-		if (analysis) {
-			let current, next, dur;
-			// console.log("ANALYSIS: ", analysis);
-			// console.log(props.time.current);
-			if (segmentIndex < analysis.segments.length - 1) {
-				if (
-					analysis.segments[segmentIndex + 1].start * 1000 <
-					props.time.current
-				) {
-					setSegmentIndex(segmentIndex + 1);
-					current = analysis.segments[segmentIndex];
-					dur = current.duration;
-					next = analysis.segments[segmentIndex + 1];
-					console.log("CURRENT SEGMENT: ", current);
-					console.log("SEGMENT DURATION: ", dur);
-					console.log("NEXT SEGMENT: ", next);
-					setSegmentAnimation({
-						from: current,
-						to: next,
-						duration: dur,
-					});
-				}
-			}
-
-		}
-		// console.log(analysis);
-		// const {bars,beats,segments} = audioDetails.analysis
-		// console.log(time);
-		mesh.current.rotation.x = mesh.current.rotation.y += segmentAnimation.to
-			? segmentAnimation.to.pitches[7] / 10
-			: 0.05;
-		// mesh.current.scale =
-	});
-
-	const animatedVals = useSpring({
-		to: {
-			scale: segmentAnimation.to
-				? [
-						1.5 *
-							segmentAnimation.to.pitches[
-								props.pitchToScaleIndex.x
-							],
-						1.5 *
-							segmentAnimation.to.pitches[
-								props.pitchToScaleIndex.y
-							],
-						1.5 *
-							segmentAnimation.to.pitches[
-								props.pitchToScaleIndex.z
-							],
-				  ]
-				: [1, 1, 1],
-		},
-		config: config.wobbly,
-	});
-
-	return (
-		<animated.mesh
-			{...animatedVals}
-			{...props}
-			ref={mesh}
-			onClick={(e) => setActive(!active)}
-			onPointerOver={(e) => setHover(true)}
-			onPointerOut={(e) => setHover(false)}
-			onUpdate={(self) => console.log("PROPS HAVE BEEN UPDATED")}
-		>
-			<boxBufferGeometry args={[1, 1, 1]} />
-			<meshPhysicalMaterial attach="material" color="#000" />
-		</animated.mesh>
-	);
-}
+import { MeshDistortMaterial, Sky } from 'drei'
+import Box from './Box'
+import Glob from './Glob'
 
 function Visualizer(props) {
+
+
 	return (
 		<Canvas>
 			<ambientLight intensity={0.5} />
@@ -132,37 +33,47 @@ function Visualizer(props) {
 				color="lightblue"
 			/>
 			<Box
-				position={[-3.6, 0, 0]}
-				color="green"
+				position={[-3.6, 0, -1]}
 				time={props.time}
 				audioDetails={props.audioDetails}
-				pitchToScaleIndex={{ x: 0, y: 1, z: 2 }}
+				pitchToScaleIndex={{ x: 0, y: 2, z: 4 }}
+				pitchToRotateIndex={{ x: 1, y: 3, z: 5 }}
 				track={props.track}
+				color="#000"
 			/>
 			<Box
-				position={[-1.2, 0, 0]}
-				color="crimson"
+				position={[-1.2, 0, -1]}
 				time={props.time}
 				audioDetails={props.audioDetails}
-				pitchToScaleIndex={{ x: 3, y: 4, z: 5 }}
+				pitchToScaleIndex={{ x: 1, y: 3, z: 5 }}
+				pitchToRotateIndex={{ x: 2, y: 4, z: 6 }}
 				track={props.track}
-			/>
-						<Box
-				position={[1.2, 0, 0]}
-				color="green"
-				time={props.time}
-				audioDetails={props.audioDetails}
-				pitchToScaleIndex={{ x: 6, y: 7, z: 8 }}
-				track={props.track}
+				color="#df3333"
 			/>
 			<Box
-				position={[3.6, 0, 0]}
-				color="crimson"
+				position={[1.2, 0, -1]}
 				time={props.time}
 				audioDetails={props.audioDetails}
-				pitchToScaleIndex={{ x: 9, y: 10, z: 11 }}
+				pitchToScaleIndex={{ x: 6, y: 8, z: 10 }}
+				pitchToRotateIndex={{ x: 7, y: 9, z: 11 }}
 				track={props.track}
+				color="#eee"
 			/>
+			<Box
+				position={[3.6, 0, -1]}
+				time={props.time}
+				audioDetails={props.audioDetails}
+				pitchToScaleIndex={{ x: 7, y: 9, z: 11 }}
+				pitchToRotateIndex={{ x: 8, y: 10, z: 0 }}
+				track={props.track}
+				color="#3333df"
+			/>
+			{/* <Glob 
+				position={[0,0,1]}
+				audioDetails={props.audioDetails}
+				time={props.time}
+				track={props.track}
+			/> */}
 		</Canvas>
 	);
 }
