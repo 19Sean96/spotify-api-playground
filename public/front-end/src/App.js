@@ -51,7 +51,7 @@ function App() {
 				// getProfile();
 
 				getProfile(tokens[0]).then(res => setProfile(res))
-                console.log(window.Spotify)
+                // console.log(window.Spotify)
             }
         } 
         else {

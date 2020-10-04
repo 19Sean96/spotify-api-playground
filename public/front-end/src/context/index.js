@@ -30,7 +30,7 @@ export default ({children}) => {
     }
 
     useEffect(() => {
-		console.log(track);
+		// console.log(track);
 		if (track) {
 			const { id } = track.current_track;
             getAudioAnalysis(id,tokens[0])
@@ -49,8 +49,8 @@ export default ({children}) => {
 	}, [track]);
 
     useEffect(() => {
-        console.log(tokens);
-        console.log('setting player')
+        // console.log(tokens);
+        // console.log('setting player')
         if (tokens.length > 1) {
             handleSDKLoaded().then(() => {
                 setPlayer(
