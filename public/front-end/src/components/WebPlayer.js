@@ -3,8 +3,6 @@ import { WebPlayerContext } from "../context";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-	faPlay,
-	faPause,
 	faFastBackward,
 	faFastForward,
 	faUndoAlt,
@@ -23,7 +21,7 @@ const StyledProgressbar = styled.div`
 `;
 
 let timeout;
-// let prevAnimTime;
+
 export default (props) => {
 	const {
 		player,
@@ -31,69 +29,55 @@ export default (props) => {
 		isPlaying,
 		setIsPlaying,
 		track,
-        tokens,
-        time,
-        setTime
+		tokens,
+		time,
+		setTime,
+		device,
+		currentBarWidth
 	} = useContext(WebPlayerContext);
-	// console.log(getCurrentState())
 
-	/* time = {
-        current: <CURRENT>
-        total: <TOTAL>
-    }
-    */
 	const controlThumb = useRef(null);
 	const controlBar = useRef(null);
-	const playIcon = useRef();
-	const [currentBarWidth, setCurrentBarWidth] = useState();
 	const timeRequestRef = useRef();
 	const prevAnimTime = useRef();
 	const [thumbStart, setThumbStart] = useState();
 	const [currentThumbPos, setCurrentThumbPos] = useState();
 	const [prevThumbPos, setPrevThumbPos] = useState();
 	const [isDragging, setDragging] = useState(false);
-	const [barWidth, getBarWidth] = useState();
+
+	// const updateBarWidth = (animTime) => {
+	// 	// console.log(timeRequestRef);
+	// 	// console.log(animTime);
+
+	// 	if (isPlaying && !isDragging && device) {
+	// 		console.log("THE SONG IS PLAYING");
+
+	// 		// console.log(`Time before request: ${Date.now()}`);
+	// 		player.getCurrentState().then((res) => {
 
 
-	const updateBarWidth = (animTime) => {
-		// console.log(timeRequestRef);
-		// console.log(isPlaying);
+	// 			timeRequestRef.current = requestAnimationFrame(() =>
+	// 				updateBarWidth(res.position)
+	// 			);
+	// 		});
+	// 	}
+	// 	if (isDragging) {
+	// 		player.pause();
+	// 	} else {
+	// 		// console.log("THE SONG IS *****NOT****** PLAYING");
+	// 		timeRequestRef.current = requestAnimationFrame(() =>
+	// 			updateBarWidth(time.current)
+	// 		);
+	// 	}
+	// };
 
-		if (isPlaying && !isDragging) {
-			console.log("THE SONG IS PLAYING");
+	// useEffect(() => {
+	// 	timeRequestRef.current = requestAnimationFrame(() =>
+	// 		updateBarWidth(time.current)
+	// 	);
 
-			// console.log(`Time before request: ${Date.now()}`);
-			player.getCurrentState().then((res) => {
-				// console.log(`Spotify Response: ${res}`);
-				// console.log(`Time of response: ${Date.now()}`);
-				setTime(() => {
-					return {
-						current: res.position,
-						total: res.duration,
-					};
-				});
-				setCurrentBarWidth(res.position / res.duration);
-				timeRequestRef.current = requestAnimationFrame(() =>
-					updateBarWidth(res.position)
-				);
-			});
-		} else if (isDragging) {
-			player.pause();
-		} else {
-			// console.log("THE SONG IS *****NOT****** PLAYING");
-			timeRequestRef.current = requestAnimationFrame(() =>
-				updateBarWidth(time.current)
-			);
-		}
-	};
-
-	useEffect(() => {
-		timeRequestRef.current = requestAnimationFrame(() =>
-			updateBarWidth(time.current)
-		);
-
-		return () => cancelAnimationFrame(timeRequestRef.current);
-	}, [isPlaying]);
+	// 	return () => cancelAnimationFrame(timeRequestRef.current);
+	// }, [isPlaying]);
 
 	// useEffect(() => {
 	//     console.log(player);
@@ -116,29 +100,18 @@ export default (props) => {
 	//     }
 	// }, [isPlaying, time]);
 
-	useEffect(() => {
-		console.log(connected);
-		connected &&
-			player?.isLoaded &&
-			player.getCurrentState().then((res) => {
-				console.log(res);
-				setTime(() => {
-					return {
-						current: res.position,
-						total: res.duration,
-					};
-				});
-				setCurrentBarWidth(res.position / res.duration);
-			});
-	}, [connected]);
 
 	return (
 		<main className="dashboard">
 			<div className="current">
 				{track && (
 					<>
-						<h2 className="current--song">{track.current_track.name}</h2>
-                        <h2 className="current--artist">{track.current_track.artists[0].name}</h2>
+						<h2 className="current--song">
+							{track.current_track.name}
+						</h2>
+						<h2 className="current--artist">
+							{track.current_track.artists[0].name}
+						</h2>
 					</>
 				)}
 			</div>
@@ -206,19 +179,18 @@ export default (props) => {
 										player
 											.getCurrentState()
 											.then((response) => {
+												console.log(response);
 												setTime(() => ({
 													current: response.position,
 													total: response.duration,
 												}));
 												clearTimeout(timeout);
+												console.log(
+													"THE NEW WIDTH: ",
+													time.current / time.total
+												);
+
 											});
-										console.log(
-											"THE NEW WIDTH: ",
-											time.current / time.total
-										);
-										setCurrentBarWidth(
-											time.current / time.total
-										);
 									})
 								}
 								className="player--skip-forward__button player--controls--button"
@@ -231,12 +203,6 @@ export default (props) => {
 						className="player--progressbar"
 						ref={controlBar}
 						width={currentBarWidth}
-						// onMouseMove={e => {
-
-						// }}
-						// onMouseUp={e => {
-
-						// }}
 					>
 						<div className="player--progressbar--full"></div>
 						<div className="player--progressbar--current">
@@ -247,26 +213,18 @@ export default (props) => {
 								// }}
 
 								onDragStart={(e) => {
-									// console.log("REACT EVENT =>", e)
-									// console.log("NATIVE EVENT => ", e.nativeEvent);
+
 									setThumbStart(e.clientX);
 									setCurrentThumbPos(e.clientX);
 									setPrevThumbPos(e.clientX);
 									setDragging(true);
-									getBarWidth(controlBar.current.clientWidth);
 								}}
 								onDrag={(e) => {
 									setCurrentThumbPos(e.clientX);
 									const changeInWidth =
 										(currentThumbPos - prevThumbPos) /
 										controlBar.current.clientWidth;
-									// console.log("REACT EVENT =>", e)
-									// console.log("NATIVE EVENT => ", e.nativeEvent);
-									// console.log("THUMB REF => ", controlThumb)
-									// console.log("CHANGE IN WIDTH (decimal) ", changeInWidth)
-									setCurrentBarWidth(
-										currentBarWidth + changeInWidth
-									);
+
 									setPrevThumbPos(currentThumbPos);
 								}}
 								onDragEnd={(e) => {
@@ -280,10 +238,10 @@ export default (props) => {
 					</StyledProgressbar>
 				</div>
 			</section>
-            <div className="scales">
-                <div className="scales--item scales__volume"></div>
-                <div className="scales--item scales__zoom"></div>
+			<div className="scales">
+				<div className="scales--item scales__volume"></div>
+				<div className="scales--item scales__zoom"></div>
 			</div>
-        </main>
+		</main>
 	);
 };

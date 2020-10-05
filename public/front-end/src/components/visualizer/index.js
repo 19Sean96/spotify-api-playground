@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "react-three-fiber";
-import { WebPlayerContext } from "../../context";
 import { useSpring, animated, config } from "react-spring/three";
 import { MeshDistortMaterial, OrbitControls, Sky } from 'drei'
 import Box from './Box'
@@ -169,16 +168,16 @@ const radius = 15;
 const yPerRow = [
 	3,2,1,0,-1,-2,-3
 ]
-const shapesPerRow = [
-	1,
-	3,
-	7,
-	13,
-	7,
-	3,
-	1
-]
-let yStart = radius
+// const shapesPerRow = [
+// 	1,
+// 	3,
+// 	7,
+// 	13,
+// 	7,
+// 	3,
+// 	1
+// ]
+// let yStart = radius
 
 const getCirclePerimCoordinates = (quant, index, radius, start=[0,0,0] ) => {
 	let x = start[0] + radius * Math.cos(2 * Math.PI * index / quant)
@@ -187,17 +186,17 @@ const getCirclePerimCoordinates = (quant, index, radius, start=[0,0,0] ) => {
 	return [x,z]
 }
 
-const getSphereAreaCoordinate = (h, dY, dZ, r) => {
-	// console.log("CURRENT Y: ", h);
-	// console.log("CHANGE IN Y: ", dY);
-	// console.log("CHANGE IN Z: ", dZ);
-	let x = r * Math.cos(dZ) * Math.sin(dY)
-	let y = r * Math.sin(dZ) * Math.sin(dY)
-	let z = r * Math.cos(dY)
-	return [x,y,z]
-}
+// const getSphereAreaCoordinate = (h, dY, dZ, r) => {
+// 	// console.log("CURRENT Y: ", h);
+// 	// console.log("CHANGE IN Y: ", dY);
+// 	// console.log("CHANGE IN Z: ", dZ);
+// 	let x = r * Math.cos(dZ) * Math.sin(dY)
+// 	let y = r * Math.sin(dZ) * Math.sin(dY)
+// 	let z = r * Math.cos(dY)
+// 	return [x,y,z]
+// }
 
-let b = 0;
+// let b = 0;
 
 function Visualizer(props) {
 	console.log("VISUALIZER WAS RENDERED");
@@ -250,60 +249,12 @@ function Visualizer(props) {
 								/>
 									
 							)
-						// }
-	
+
 					})
-					// for (let j = 0; j < shapesPerRow[i]; j++) {
-					// 	let box = boxes[b]
-						
-					// 	if (b == boxes.length - 1) {
-					// 		b = 0
-					// 	} else b++
-
-					// 	let dZ = 2 * Math.PI * j / shapesPerRow[i]
-					// 	const coord = getSphereAreaCoordinate(h, dY, dZ, radius)
-					// 	console.log("THIS IS THE COORD: ", coord);
-					// 	return (
-					// 		<Box
-					// 			position={[coord[0], coord[1], coord[2]]}
-					// 			time={props.time}
-					// 			audioDetails={props.audioDetails}
-					// 			pitchToScaleIndex={box.pitchToScaleIndex}
-					// 			pitchToRotateIndex={box.pitchToRotateIndex}
-					// 			track={props.track}
-					// 			color={i % 2 === 0 ? "#333" : "#ddd"}
-					// 		/>
-								
-					// 	)
-					// }
-
 
 				})
-
 			}
-			{/* {
-				boxes.map((box,i) => {
-					let y = 5;
 
-					// for (i = z; i <= -5; i--) {
-
-						let coordinate = getCirclePerimCoordinates(boxes.length, i, radius)
-						return (
-							<Box
-								position={[coordinate[0], 0, coordinate[1]]}
-								time={props.time}
-								audioDetails={props.audioDetails}
-								pitchToScaleIndex={box.pitchToScaleIndex}
-								pitchToRotateIndex={box.pitchToRotateIndex}
-								track={props.track}
-								color={i % 2 === 0 ? "#333" : "#ddd"}
-							/>
-								
-						)
-					// }
-
-				})
-			} */}
 		</Canvas>
 	);
 }
