@@ -50,10 +50,13 @@ function App() {
 	};
 
 	useEffect(() => {
-		if ( ! '%NODE_ENV' || '%NODE_ENV%' === 'development') {
+		console.log('%NODE_ENV%');
+		console.log(window.location.href)
+		if ( ! '%NODE_ENV%' || '%NODE_ENV%' === 'development') {
 			uri = 'http://localhost:8888/'
 		}
-		else uri = window.location.href
+		else uri = window.location.href;
+		console.log(uri)
 	}, [])
 
 	useEffect(() => {
