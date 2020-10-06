@@ -37,15 +37,24 @@ function App() {
 		}
 	};
 
-	const openRequestedPopUp = () => {
+	let uri
+
+	const openRequestedPopUp = (uri) => {
 		setWindowObjRef(
 			window.open(
-				`http://localhost:8888/login`,
+				`${uri}login`,
 				"Log In To Your Spotify Account",
 				"height=1200,width=800,opener"
 			)
 		);
 	};
+
+	useEffect(() => {
+		if ( ! '%NODE_ENV' || '%NODE_ENV%' === 'development') {
+			uri = 'http://localhost:8888/'
+		}
+		else uri = window.location.href
+	}, [])
 
 	useEffect(() => {
 		if (tokens.length > 0) {
@@ -79,7 +88,7 @@ function App() {
 						</p>
 						<button
 							className="login--btn"
-							onClick={openRequestedPopUp}
+							onClick={() => openRequestedPopUp(uri)}
 						>
 							Login
 						</button>

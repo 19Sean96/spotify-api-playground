@@ -36,7 +36,7 @@ app.get("/test", function (req, res) {
 app.get("/login", function (req, res) {
 	const state = generateRandomString(16);
 	res.cookie(stateKey, state);
-
+	console.log("login modal opened");
 	// your application requests authorization
 	const scope =
 		"user-read-private user-read-email user-read-currently-playing user-read-playback-state streaming";
