@@ -50,12 +50,16 @@ function App() {
 	};
 
 	useEffect(() => {
-		console.log('%NODE_ENV%');
-		console.log(window.location.href)
+
 		if ( ! '%NODE_ENV%' || '%NODE_ENV%' === 'development') {
+			console.log('you are currently in development');
 			uri = 'http://localhost:8888/'
 		}
-		else uri = window.location.href;
+		else {
+			console.log('you are currently in production');
+
+			uri = window.location.href;
+		}
 		console.log(uri)
 	}, [])
 

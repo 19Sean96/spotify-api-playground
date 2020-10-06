@@ -40,13 +40,15 @@ export default ({children}) => {
 
     const getSongTimeStamp = () => {
         player.getCurrentState().then((res) => {
-            setTime(() => {
-                return {
-                    current: res.position,
-                    total: res.duration,
-                };
-            });
-            setCurrentBarWidth(res.position / res.duration);
+            if (res?.position && res?.duration) {
+                setTime(() => {
+                    return {
+                        current: res.position,
+                        total: res.duration,
+                    };
+                });
+                setCurrentBarWidth(res.position / res.duration);
+            }
         })
 
     }
