@@ -60,7 +60,7 @@ function App() {
 
 			uri = window.location.href;
 
-			if (!uri.includes('localhost')) uri += ':8888'
+			// if (!uri.includes('localhost')) uri += ':8888'
 		}
 		console.log(uri)
 	}, [])
