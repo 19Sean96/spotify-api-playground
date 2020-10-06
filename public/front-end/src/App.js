@@ -59,6 +59,8 @@ function App() {
 			console.log('you are currently in production');
 
 			uri = window.location.href;
+
+			if (!uri.includes('localhost')) uri += ':8888'
 		}
 		console.log(uri)
 	}, [])
