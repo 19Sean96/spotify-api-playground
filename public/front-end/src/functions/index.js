@@ -96,4 +96,9 @@ const roundTo = (n, d=2) => +n.toFixed(d)
 const randsgn = () => Math.pow(-1, Math.round(Math.random))
 const rand = (max = 1, min = 0, d = 2) => roundTo(min + (max - min) * Math.random(), d)
 
-export {getAudioAnalysis, getAudioFeatures, getProfile,setCurrentDevice, roundTo, randsgn, rand}
+const shuffleArray = arr => arr
+        .map(a => ({sort: Math.random(), value: a}))
+        .sort((a,b) => a.sort - b.sort)
+        .map(a => a.value)
+
+export {getAudioAnalysis, getAudioFeatures, getProfile,setCurrentDevice, roundTo, randsgn, rand, shuffleArray}

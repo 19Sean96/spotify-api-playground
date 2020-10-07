@@ -4,8 +4,9 @@ import { useSpring, animated, config } from "react-spring/three";
 import { MeshDistortMaterial, OrbitControls, Sky } from 'drei'
 import Box from './Box'
 import Glob from './Glob'
+import { shuffleArray } from "../../functions";
 
-const boxes = [
+let boxes = [
 	{
 		pitchToScaleIndex: {
 			x: 0,
@@ -230,7 +231,7 @@ function Visualizer(props) {
 			/>
 			{
 				yPerRow.map((Y, i) => {
-
+					boxes = shuffleArray(boxes)
 					return boxes.map((box,i) => {
 						let y = 5;
 
