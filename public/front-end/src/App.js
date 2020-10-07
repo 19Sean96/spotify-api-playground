@@ -50,8 +50,9 @@ function App() {
 	};
 
 	useEffect(() => {
+		console.log(process.env.NODE_ENV);
 
-		if ( ! '%NODE_ENV%' || '%NODE_ENV%' === 'development') {
+		if ( ! '%NODE_ENV%' || process.env.NODE_ENV === 'development') {
 			console.log('you are currently in development');
 			uri = 'http://localhost:8888/'
 		}
@@ -90,10 +91,8 @@ function App() {
 			<Visualizer time={time} audioDetails={audioDetails} track={track} />
 			{!loggedIn ? (
 				<div className="login">
-					<div className="login--step">
-						<p className="login--step--num">1.</p>
-						<p className="login--step--text">
-							Login to your Spotify Account:
+						<p className="login--text">
+							Login to your Spotify Account
 						</p>
 						<button
 							className="login--btn"
@@ -101,19 +100,6 @@ function App() {
 						>
 							Login
 						</button>
-					</div>
-					<div className="login--step">
-						<p className="login--step--num">2.</p>
-						<p className="login--step--text">
-							Select <span>"Chromesthetics"</span> as a listening device in the Spotify app
-						</p>
-					</div>
-					<div className="login--step">
-					<p className="login--step--num">3.</p>
-					<p className="login--step--text">
-						Enjoy!
-					</p>
-					</div>
 				</div>
 			) : (
 				<p style={{ display: "none" }}>you are already logged in!</p>
