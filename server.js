@@ -25,7 +25,7 @@ const generateRandomString = function (length) {
 const stateKey = "spotify_auth_state";
 const app = express();
 
-app.use(express.static(__dirname + "/public"))
+app.use(express.static(__dirname + "/public/front-end/build/"))
 	.use(cors())
 	.use(cookieParser());
 
@@ -36,7 +36,7 @@ app.get("/test", function (req, res) {
 app.get("/login", function (req, res) {
 	const state = generateRandomString(16);
 	res.cookie(stateKey, state);
-
+	console.log("login modal opened");
 	// your application requests authorization
 	const scope =
 		"user-read-private user-read-email user-read-currently-playing user-read-playback-state streaming";
@@ -147,12 +147,10 @@ app.get("/refresh_token", function (req, res) {
 		});
 });
 
-// app.get('/currentsong', function(req,res) {
-// 	axios({
-// 		url: 'https://api.spotify.com/v1/me/player/currently-playing',
-// 		method: 'get',
+app.get('*', function (req,res) {
 
-// 	})
-// })
+	res.sendFile(__dirname + '/public/front-end/build/index.html')
+})
+
 console.log("Listening on 8888");
 app.listen(8888);

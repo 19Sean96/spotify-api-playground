@@ -31,7 +31,7 @@ export default function(props) {
 
 	// }, [analysis])
 
-	console.log(config);
+	// console.log(config);
 
 	useEffect(() => {
 		setSegmentIndex(0);
@@ -64,35 +64,35 @@ export default function(props) {
 
 		}
 
-		// mesh.current.rotation.x = mesh.current.rotation.y += segmentAnimation.to
-		// 	? segmentAnimation.to.pitches[7] / 10
-		// 	: 0.05;
 
 		mesh.current.rotation.x += segmentAnimation.to ? segmentAnimation.to.pitches[
 			props.pitchToRotateIndex.x
 		] / 10 : .05
+
 		mesh.current.rotation.y += segmentAnimation.to ? segmentAnimation.to.pitches[
 			props.pitchToRotateIndex.y
 		] / 10 : .05
+
 		mesh.current.rotation.z += segmentAnimation.to ? segmentAnimation.to.pitches[
 			props.pitchToRotateIndex.z
 		] / 10 : .05
+		
 	});
 
 	const animatedVals = useSpring({
 		to: {
 			scale: segmentAnimation.to
 				? [
-						.5 + 1.75 *
-							segmentAnimation.to.pitches[
+						.5 + .075 *
+							segmentAnimation.to.timbre[
 								props.pitchToScaleIndex.x
 							],
-						.5 + 1.75 *
-							segmentAnimation.to.pitches[
+						.5 + .075 *
+							segmentAnimation.to.timbre[
 								props.pitchToScaleIndex.y
 							],
-						.5 + 1.75 *
-							segmentAnimation.to.pitches[
+						.5 + .075 *
+							segmentAnimation.to.timbre[
 								props.pitchToScaleIndex.z
 							],
 				  ]
@@ -109,7 +109,7 @@ export default function(props) {
 			onClick={(e) => setActive(!active)}
 			onPointerOver={(e) => setHover(true)}
 			onPointerOut={(e) => setHover(false)}
-			onUpdate={(self) => console.log("PROPS HAVE BEEN UPDATED")}
+			// onUpdate={(self) => console.log("PROPS HAVE BEEN UPDATED")}
 		>
 			<boxBufferGeometry args={[1, 1, 1]} />
 			{/* <meshPhysicalMaterial attach="material" color={props.color} /> */}
