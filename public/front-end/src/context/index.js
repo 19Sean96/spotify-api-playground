@@ -95,7 +95,7 @@ export default ({children}) => {
                     new window.Spotify.Player({
                         name: 'Chromesthetics',
                         getOAuthToken: cb => cb(tokens[0]),
-                        volume: .05
+                        volume: .5
                     })
                 )
                 setLoggedIn(true);

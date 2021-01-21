@@ -83,16 +83,16 @@ export default function(props) {
 		to: {
 			scale: segmentAnimation.to
 				? [
-						.5 + 1.75 *
-							segmentAnimation.to.pitches[
+						.5 + .075 *
+							segmentAnimation.to.timbre[
 								props.pitchToScaleIndex.x
 							],
-						.5 + 1.75 *
-							segmentAnimation.to.pitches[
+						.5 + .075 *
+							segmentAnimation.to.timbre[
 								props.pitchToScaleIndex.y
 							],
-						.5 + 1.75 *
-							segmentAnimation.to.pitches[
+						.5 + .075 *
+							segmentAnimation.to.timbre[
 								props.pitchToScaleIndex.z
 							],
 				  ]
